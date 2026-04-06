@@ -15,8 +15,8 @@
 
 <p align="center">
   <a href="#dart-about">About</a> &#xa0; | &#xa0; 
-  <a href="#num-data-processing">Data Processing</a> &#xa0; | &#xa0;
-  <a href="#bar_chart-results">Results</a> &#xa0; | &#xa0;
+  <a href="#data-processing">Data Processing</a> &#xa0; | &#xa0;
+  <a href="#results">Results</a> &#xa0; | &#xa0;
   <a href="#rocket-technologies">Technologies</a> &#xa0; | &#xa0;
   <a href="#checkered_flag-starting">Starting</a> &#xa0; | &#xa0;
   <a href="https://github.com/davifdepaula" target="_blank">Author</a>
@@ -31,17 +31,17 @@ Este projeto utiliza Regressão Logística para prever o risco de um paciente de
 Os dados utilizados foram extraídos do dataset de Framingham, disponível publicamente no Kaggle:
 [Logistic Regression for Heart Disease Prediction](https://www.kaggle.com/datasets/dileep070/heart-disease-prediction-using-logistic-regression)
 
-## :num-data-processing: Data Processing ##
+## :card_index_dividers: Data Processing ##
 
 O pipeline de dados foi desenhado para tratar inconsistências e o desbalanceamento natural de dados clínicos:
 
 * Limpeza de Dados: Iniciamos com 4.238 registros. Foram removidos 645 valores ausentes (NaNs), garantindo que o modelo não fosse treinado com informações incompletas.
 * Balanço de Classes: 
-    * Classe Majoritária (0): 3.099 pacientes (Sem risco detectado de desenvolver ataque cardiaco daqui a 10 anos).
+    * Classe Majoritária (0): 3.099 pacientes (Sem risco detectado de desenvolver ataque cardíaco daqui a 10 anos).
     * Classe Minoritária (1): 557 pacientes (Com risco de ataque cardíaco daqui a 10 anos).
 * Estratégia: Aplicamos Undersampling na classe majoritária. Sem isso, o modelo teria um viés de falso otimismo, aprendendo que quase ninguém teria ataques cardíacos devido à enorme predominância da classe negativa. O balanceamento força o modelo a aprender as características críticas da classe minoritária.
 
-## :bar_chart-results: Results ##
+## :bar_chart: Results ##
 
 As métricas obtidas no conjunto de teste demonstram a eficácia do modelo, especialmente na métrica mais sensível ao contexto médico:
 
