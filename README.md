@@ -15,8 +15,8 @@
 
 <p align="center">
   <a href="#dart-about">About</a> &#xa0; | &#xa0; 
-  <a href="#data-processing">Data Processing</a> &#xa0; | &#xa0;
-  <a href="#results">Results</a> &#xa0; | &#xa0;
+  <a href="#card_index_dividers-data-processing">Data Processing</a> &#xa0; | &#xa0;
+  <a href="#bar_chart-results">Results</a> &#xa0; | &#xa0;
   <a href="#rocket-technologies">Technologies</a> &#xa0; | &#xa0;
   <a href="#checkered_flag-starting">Starting</a> &#xa0; | &#xa0;
   <a href="https://github.com/davifdepaula" target="_blank">Author</a>
@@ -86,3 +86,13 @@ $ python src/train.py
 # Este comando carrega o modelo salvo e o dataset de teste para validar
 # a performance e gerar o relatório final (metrics_report.txt).
 $ python src/test.py
+```
+
+Feito com :heart: por <a href="https://github.com/davifdepaula" target="_blank">Davi Ferreira</a>
+&#xa0;
+
+<p align="center">
+  <a href="#top">Voltar para o topo!</a>
+</p>
+
+
