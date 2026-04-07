@@ -1,7 +1,5 @@
 <div align="center" id="top"> 
   <img src="https://raw.githubusercontent.com/davifdepaula/logistic-regression-heart-disease/main/.github/app.gif" alt="Logistic Regression Heart Disease" />
-
-  &#xa0;
 </div>
 
 <h1 align="center">Logistic Regression Heart Disease</h1>
@@ -26,46 +24,45 @@
 
 ## :dart: About ##
 
-Este projeto utiliza Regressão Logística para prever o risco de um paciente desenvolver doenças cardíacas nos próximos 10 anos. O objetivo principal é fornecer uma análise preditiva robusta com foco em interpretabilidade e alta taxa de detecção de pacientes em risco.
+Este projeto utiliza Regressão Logística para prever o risco de um paciente desenvolver doenças cardíacas nos próximos 10 anos. O objetivo central é fornecer uma ferramenta de triagem que maximize a detecção de casos de risco, equilibrando a viabilidade com rigor estatístico.
 
-Os dados utilizados foram extraídos do dataset de Framingham, disponível publicamente no Kaggle:
+Dados extraídos do dataset de Framingham (Kaggle):
 [Logistic Regression for Heart Disease Prediction](https://www.kaggle.com/datasets/dileep070/heart-disease-prediction-using-logistic-regression)
 
 ## :card_index_dividers: Data Processing ##
 
-O pipeline de dados foi desenhado para tratar inconsistências e o desbalanceamento natural de dados clínicos:
+O pipeline foi desenhado para tratar o desbalanceamento natural de dados clínicos e garantir a generalização do modelo:
 
-* Limpeza de Dados: Iniciamos com 4.238 registros. Foram removidos 645 valores ausentes (NaNs), garantindo que o modelo não fosse treinado com informações incompletas.
-* Balanço de Classes: 
-    * Classe Majoritária (0): 3.099 pacientes (Sem risco detectado de desenvolver ataque cardíaco daqui a 10 anos).
-    * Classe Minoritária (1): 557 pacientes (Com risco de ataque cardíaco daqui a 10 anos).
-* Estratégia: Aplicamos Undersampling na classe majoritária. Sem isso, o modelo teria um viés de falso otimismo, aprendendo que quase ninguém teria ataques cardíacos devido à enorme predominância da classe negativa. O balanceamento força o modelo a aprender as características críticas da classe minoritária.
+* **Limpeza:** Remoção de 645 registros com valores ausentes para evitar viés por imputação.
+* **Divisão de Dados:** Separação em Treino (75%), Validação (12.5%) e Teste (12.5%).
+* **Estratégia de Validação:** Utilizamos o conjunto de validação para testar diferentes limiares (*cutoffs*) e técnicas de balanceamento antes da avaliação final.
 
-## :bar_chart: Results ##
+## :bar_chart: Results & Evolution ##
 
-As métricas obtidas no conjunto de teste demonstram a eficácia do modelo, especialmente na métrica mais sensível ao contexto médico:
+Durante o desenvolvimento, comparamos o modelo Baseline (disponível na branch main) com uma versão utilizando pesos balanceados e otimização de threshold via Curva ROC. 
 
-| Métrica | Valor |
-| :--- | :--- |
-| Recall | 71.31% |
-| Accuracy | 62.00% |
-| Precision | 57.14% |
+### Comparativo de Métricas (Test Set)
 
-> Em saúde pública, o Recall é a métrica de sucesso. É mais seguro para o sistema de saúde realizar exames preventivos em um falso positivo (Precisão baixa) do que dar alta para um paciente que corre risco real de vida (Recall baixo).
+| Métrica | Modelo Baseline (Escolhido) | Modelo Otimizado (ROC/Balanced) | Evolução |
+| :--- | :--- | :--- | :--- |
+| **Recall (Sensibilidade)** | 71.32% | 66.67% | -4.65% |
+| **Precision** | 57.14% | 32.86% | -24.28% |
+| **Accuracy** | 62.01% | 74.40% | +12.41% |
+
+### Por que optamos por manter o Baseline?
+
+Após a análise dos resultados, decidimos manter a configuração Baseline como o modelo final devido aos seguintes fatores:
+
+1. **Maior Rede de Segurança:** O Baseline alcançou um Recall de 71.31%. No contexto de saúde pública, perder 4.6% a mais de pacientes em risco (como ocorreu na versão com a curva ROC e pesos balanceados) é um risco clínico que é necessário evitar.
+2. **Confiabilidade do Diagnóstico:** A precisão do Baseline (57.14%) é significativamente superior. Uma precisão baixa demais (32%) geraria muitos alarmes falsos, causando ansiedade desnecessária nos pacientes e sobrecarga financeira ao sistema de saúde com exames confirmatórios.
+3. **Eficiência do Trade-off:** O Baseline provou ser o ponto de operação mais equilibrado, garantindo que a maioria dos doentes seja identificada sem sacrificar a utilidade prática do modelo.
 
 ## :rocket: Technologies ##
 
-As seguintes ferramentas foram utilizadas neste projeto:
-
-- Python
-- Pandas
-- Statsmodels
+- Python 3.10+
+- Pandas / Numpy
 - Scikit-learn
 - Pickle
-
-## :white_check_mark: Requirements ##
-
-Antes de começar, você precisa ter o Git e o Python 3.10+ instalados.
 
 ## :checkered_flag: Starting ##
 
@@ -77,14 +74,11 @@ $ git clone [https://github.com/davifdepaula/logistic-regression-heart-disease](
 $ pip install -r requirements.txt
 
 # 1. Execute o treinamento
-# Este comando processa os dados brutos, aplica a limpeza/balanceamento,
-# treina o modelo (.pkl) e exporta os datasets de treino (train_dataset.csv)
-# e de teste (test_dataset.csv) para a pasta src/data/.
+# Processa dados e exporta o modelo (.pkl) e o threshold (.txt)
 $ python src/train.py
 
 # 2. Execute a análise de métricas
-# Este comando carrega o modelo salvo e o dataset de teste para validar
-# a performance e gerar o relatório final (metrics_report.txt).
+# Valida a performance no dataset de teste e gera o relatório final
 $ python src/test.py
 ```
 
@@ -94,5 +88,3 @@ Feito com :heart: por <a href="https://github.com/davifdepaula" target="_blank">
 <p align="center">
   <a href="#top">Voltar para o topo!</a>
 </p>
-
-
