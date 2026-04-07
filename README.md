@@ -34,7 +34,7 @@ Os dados utilizados foram extraídos do dataset de Framingham, disponível no Ka
 O pipeline de dados foi desenhado para tratar inconsistências e o desbalanceamento natural de dados clínicos:
 
 * **Limpeza de Dados:** Remoção de 645 registros com valores ausentes (NaNs), garantindo a integridade estatística do treinamento.
-* **Balanço de Classes:** * Classe Majoritária (0): 3.099 pacientes (Sem risco detectado).
+* **Balanço de Classes:** Classe Majoritária (0): 3.099 pacientes (Sem risco detectado).
     * Classe Minoritária (1): 557 pacientes (Com risco detectado).
 * **Estratégia Baseline:** Aplicamos Undersampling na classe majoritária. Sem isso, o modelo teria um viés de falso otimismo, aprendendo que quase ninguém teria ataques cardíacos devido à enorme predominância da classe negativa. O balanceamento força o modelo a aprender as características críticas da classe minoritária.
 
@@ -45,23 +45,23 @@ Durante o desenvolvimento, realizou-se uma análise comparativa entre o modelo B
 ### Desenvolvimento do Modelo Experimental
 
 O pipeline da versão experimental foi desenhado para testar a generalização do modelo sob condições de penalização de erro:
-* **Divisão de Dados:** Separação rigorosa em **Treino (75%)**, **Validação (12.5%)** e **Teste (12.5%)**.
+* **Divisão de Dados:** Separação em Treino (75%), Validação (12.5%) e Teste (12.5%).
 * **Estratégia de Validação:** O conjunto de validação foi utilizado exclusivamente para testar diferentes limiares (*cutoffs*) e técnicas de balanceamento (`class_weight='balanced'`) antes da avaliação final.
 
 ### Comparativo de Performance (Test Set)
 
 | Métrica | Modelo Baseline (Final) | Modelo Experimental | Impacto |
 | :--- | :--- | :--- | :--- |
-| **Recall (Sensibilidade)** | **71.31%** | 66.67% | **-4.64%** |
-| **Precision** | **57.14%** | 32.86% | **-24.28%** |
-| **Accuracy** | 62.00% | **74.40%** | +12.40% |
+| **Recall (Sensibilidade)** | 71.31% | 66.67% | -4.64% |
+| **Precision** | 57.14% | 32.86% | -24.28% |
+| **Accuracy** | 62.00% | 74.40% | +12.40% |
 
 ### Justificativa da Escolha
 
-Optamos por consolidar o **Baseline** como o modelo principal pelos seguintes motivos:
+Optamos pelo Baseline como o modelo principal pelos seguintes motivos:
 
-1. **Priorização do Recall:** Em diagnósticos médicos, o custo de um falso negativo (não detectar o risco) é superior ao de um falso positivo. O Baseline identificou **71.31%** dos casos reais, superando a versão experimental.
-2. **Viabilidade Clínica:** A precisão de **57.14%** do Baseline evita uma sobrecarga excessiva no sistema de saúde com alarmes falsos, mantendo um equilíbrio superior à versão experimental (32.86%).
+1. **Priorização do Recall:** Em diagnósticos médicos, o custo de um falso negativo (não detectar o risco) é superior ao de um falso positivo. O Baseline identificou 71.31% dos casos reais, superando a versão experimental.
+2. **Viabilidade Clínica:** A precisão de 57.14% do Baseline evita uma sobrecarga excessiva no sistema de saúde com alarmes falsos, mantendo um equilíbrio superior à versão experimental (32.86%).
 
 ## :rocket: Technologies ##
 
