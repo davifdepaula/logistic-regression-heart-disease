@@ -1,18 +1,35 @@
 import os
 import pickle
 import pandas as pd
-import statsmodels.api as sm
+import numpy as np
+from sklearn.linear_model import LogisticRegression
 from dataCleaner import DataCleaner
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import roc_curve
+
+def get_optimal_threshold(model, x_val, y_val):
+    y_probs = model.predict_proba(x_val)[:, 1]
+    fpr, tpr, thresholds = roc_curve(y_val, y_probs)
+    j_scores = tpr + (1 - fpr) - 1
+    best_idx = np.argmax(j_scores)
+    return thresholds[best_idx]
 
 def train_model(x_train, y_train):
-    model = sm.Logit(y_train, x_train).fit()
+    model = LogisticRegression(class_weight='balanced', max_iter=1000)
+    model.fit(x_train, y_train)
     return model
 
-def save_model(model, path='src/models/logistic_regression_model.pkl'):
-    with open(path, 'wb') as f:
+def save_model_and_threshold(model, threshold, model_path, txt_path):
+    with open(model_path, 'wb') as f:
         pickle.dump(model, f)
-    print(f"Model saved in: {path}")
+    
+    with open(txt_path, 'w') as f:
+        f.write(str(threshold))
+    
+    print(f"--- Success ---")
+    print(f"Model exported to: {model_path}")
+    print(f"Threshold exported to: {txt_path}")
+    print(f"Final Threshold Value: {threshold:.4f}")
 
 def main():
     RAW_DATA = "src/data/framingham.csv"
@@ -25,21 +42,32 @@ def main():
     processor = DataCleaner()
     df_raw = pd.read_csv(RAW_DATA)
     df_clean = processor.clean_data(df_raw)
-    df_balanced = processor.perform_class_balancing(df_clean)
-    processor.save_balanced_cvs(df_balanced)
+    processor.save_cvs(df_clean)
 
-    df_vars = df_balanced.drop(columns=['TenYearCHD'])
-    df_vars_with_const= sm.add_constant(df_vars)
-    df_heart_attack_10y = df_balanced['TenYearCHD']
+    X = df_clean.drop(columns=['TenYearCHD'])
+    y = df_clean['TenYearCHD']
 
-    x_train, x_test, y_train, y_test = train_test_split(
-    df_vars_with_const, df_heart_attack_10y, test_size=0.25, random_state=42)
+    x_train, x_temp, y_train, y_temp = train_test_split(
+        X, y, test_size=0.25, random_state=42, stratify=y
+    )
+
+    x_val, x_test, y_val, y_test = train_test_split(
+        x_temp, y_temp, test_size=0.5, random_state=42, stratify=y_temp
+    )
 
     pd.concat([x_train, y_train], axis=1).to_csv(f"{PROCESSED_DIR}/train_dataset.csv", index=False)
+    pd.concat([x_val, y_val], axis=1).to_csv(f"{PROCESSED_DIR}/val_dataset.csv", index=False)
     pd.concat([x_test, y_test], axis=1).to_csv(f"{PROCESSED_DIR}/test_dataset.csv", index=False)
 
     model = train_model(x_train, y_train)
-    save_model(model, f"{MODEL_DIR}/logistic_regression_v1.pkl")
+    best_threshold = get_optimal_threshold(model, x_val, y_val)
+    
+    save_model_and_threshold(
+        model, 
+        best_threshold, 
+        f"{MODEL_DIR}/logistic_regression_v1.pkl",
+        f"{MODEL_DIR}/optimized_threshold.txt"
+    )
 
 if __name__ == "__main__":
     main()

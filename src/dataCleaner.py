@@ -16,5 +16,5 @@ class DataCleaner:
         df_balanced = df_balanced.sample(frac=1, random_state=42).reset_index(drop=True)
         return df_balanced
     
-    def save_balanced_cvs(self, dataframe, filepath = 'src/data/processed_dataset.csv'):
+    def save_cvs(self, dataframe, filepath = 'src/data/processed_dataset.csv'):
         dataframe.to_csv(filepath, index=False)

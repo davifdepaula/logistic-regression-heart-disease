@@ -1,4 +1,4 @@
 --- Model Evaluation ---
-Recall: 0.7132
-Accuracy: 0.6201
-Precision: 0.5714
+Recall: 0.6667
+Accuracy: 0.7440
+Precision: 0.3286
