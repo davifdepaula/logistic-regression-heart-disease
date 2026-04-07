@@ -1,7 +1,5 @@
 <div align="center" id="top"> 
   <img src="https://raw.githubusercontent.com/davifdepaula/logistic-regression-heart-disease/main/.github/app.gif" alt="Logistic Regression Heart Disease" />
-
-  &#xa0;
 </div>
 
 <h1 align="center">Logistic Regression Heart Disease</h1>
@@ -26,46 +24,50 @@
 
 ## :dart: About ##
 
-Este projeto utiliza Regressão Logística para prever o risco de um paciente desenvolver doenças cardíacas nos próximos 10 anos. O objetivo principal é fornecer uma análise preditiva robusta com foco em interpretabilidade e alta taxa de detecção de pacientes em risco.
+Este projeto utiliza Regressão Logística para prever o risco de um paciente desenvolver doenças cardíacas nos próximos 10 anos. O objetivo principal é fornecer uma análise preditiva robusta com foco em interpretabilidade e alta taxa de detecção de pacientes em risco (Recall).
 
-Os dados utilizados foram extraídos do dataset de Framingham, disponível publicamente no Kaggle:
+Os dados utilizados foram extraídos do dataset de Framingham, disponível no Kaggle:
 [Logistic Regression for Heart Disease Prediction](https://www.kaggle.com/datasets/dileep070/heart-disease-prediction-using-logistic-regression)
 
 ## :card_index_dividers: Data Processing ##
 
 O pipeline de dados foi desenhado para tratar inconsistências e o desbalanceamento natural de dados clínicos:
 
-* Limpeza de Dados: Iniciamos com 4.238 registros. Foram removidos 645 valores ausentes (NaNs), garantindo que o modelo não fosse treinado com informações incompletas.
-* Balanço de Classes: 
-    * Classe Majoritária (0): 3.099 pacientes (Sem risco detectado de desenvolver ataque cardíaco daqui a 10 anos).
-    * Classe Minoritária (1): 557 pacientes (Com risco de ataque cardíaco daqui a 10 anos).
-* Estratégia: Aplicamos Undersampling na classe majoritária. Sem isso, o modelo teria um viés de falso otimismo, aprendendo que quase ninguém teria ataques cardíacos devido à enorme predominância da classe negativa. O balanceamento força o modelo a aprender as características críticas da classe minoritária.
+* **Limpeza de Dados:** Remoção de 645 registros com valores ausentes (NaNs), garantindo a integridade estatística do treinamento.
+* **Balanço de Classes:** * Classe Majoritária (0): 3.099 pacientes (Sem risco detectado).
+    * Classe Minoritária (1): 557 pacientes (Com risco detectado).
+* **Estratégia Baseline:** Aplicamos Undersampling na classe majoritária. Sem isso, o modelo teria um viés de falso otimismo, aprendendo que quase ninguém teria ataques cardíacos devido à enorme predominância da classe negativa. O balanceamento força o modelo a aprender as características críticas da classe minoritária.
 
-## :bar_chart: Results ##
+## :bar_chart: Results & Model Selection ##
 
-As métricas obtidas no conjunto de teste demonstram a eficácia do modelo, especialmente na métrica mais sensível ao contexto médico:
+Durante o desenvolvimento, realizou-se uma análise comparativa entre o modelo Baseline (disponível na branch `main`) e uma versão experimental utilizando pesos balanceados e otimização de *threshold* via Curva ROC (disponível na branch `weight-balanced-threshold`).
 
-| Métrica | Valor |
-| :--- | :--- |
-| Recall | 71.31% |
-| Accuracy | 62.00% |
-| Precision | 57.14% |
+### Desenvolvimento do Modelo Experimental
 
-> Em saúde pública, o Recall é a métrica de sucesso. É mais seguro para o sistema de saúde realizar exames preventivos em um falso positivo (Precisão baixa) do que dar alta para um paciente que corre risco real de vida (Recall baixo).
+O pipeline da versão experimental foi desenhado para testar a generalização do modelo sob condições de penalização de erro:
+* **Divisão de Dados:** Separação rigorosa em **Treino (75%)**, **Validação (12.5%)** e **Teste (12.5%)**.
+* **Estratégia de Validação:** O conjunto de validação foi utilizado exclusivamente para testar diferentes limiares (*cutoffs*) e técnicas de balanceamento (`class_weight='balanced'`) antes da avaliação final.
+
+### Comparativo de Performance (Test Set)
+
+| Métrica | Modelo Baseline (Final) | Modelo Experimental | Impacto |
+| :--- | :--- | :--- | :--- |
+| **Recall (Sensibilidade)** | **71.31%** | 66.67% | **-4.64%** |
+| **Precision** | **57.14%** | 32.86% | **-24.28%** |
+| **Accuracy** | 62.00% | **74.40%** | +12.40% |
+
+### Justificativa da Escolha
+
+Optamos por consolidar o **Baseline** como o modelo principal pelos seguintes motivos:
+
+1. **Priorização do Recall:** Em diagnósticos médicos, o custo de um falso negativo (não detectar o risco) é superior ao de um falso positivo. O Baseline identificou **71.31%** dos casos reais, superando a versão experimental.
+2. **Viabilidade Clínica:** A precisão de **57.14%** do Baseline evita uma sobrecarga excessiva no sistema de saúde com alarmes falsos, mantendo um equilíbrio superior à versão experimental (32.86%).
 
 ## :rocket: Technologies ##
 
-As seguintes ferramentas foram utilizadas neste projeto:
-
-- Python
-- Pandas
-- Statsmodels
-- Scikit-learn
-- Pickle
-
-## :white_check_mark: Requirements ##
-
-Antes de começar, você precisa ter o Git e o Python 3.10+ instalados.
+- Python / Pandas / Numpy
+- Statsmodels / Scikit-learn
+- Pickle (Serialização do Modelo)
 
 ## :checkered_flag: Starting ##
 
@@ -73,18 +75,16 @@ Antes de começar, você precisa ter o Git e o Python 3.10+ instalados.
 # Clone o projeto
 $ git clone [https://github.com/davifdepaula/logistic-regression-heart-disease](https://github.com/davifdepaula/logistic-regression-heart-disease)
 
+# Para visualizar o experimento de pesos balanceados:
+$ git checkout weight-balanced-threshold
+
 # Instale as dependências
 $ pip install -r requirements.txt
 
-# 1. Execute o treinamento
-# Este comando processa os dados brutos, aplica a limpeza/balanceamento,
-# treina o modelo (.pkl) e exporta os datasets de treino (train_dataset.csv)
-# e de teste (test_dataset.csv) para a pasta src/data/.
+# 1. Execute o treinamento (Baseline na main)
 $ python src/train.py
 
 # 2. Execute a análise de métricas
-# Este comando carrega o modelo salvo e o dataset de teste para validar
-# a performance e gerar o relatório final (metrics_report.txt).
 $ python src/test.py
 ```
 
